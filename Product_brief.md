@@ -2,18 +2,18 @@
 
 ## TL;DR
 
-**Poke Showcase Dex** is an Android app that helps Pokémon GO players decide which Pokémon to enter into "Showcase" events. Players screenshot a Pokémon's detail screen, the app reads its stats via on-device OCR, and instantly returns a calculated score range, a ranking against the player's other scans, and a comparison against the rest of the field.
+**Poke Showcase Dex** is an Android app that helps Pokémon GO players decide which Pokémon to enter into "Showcase" events. PSD opens an overlay over Pokemon go to capture Pokémon's detail screen, the app reads its stats via on-device OCR, and instantly returns a calculated score range, and a ranking against the player's other scans.
 
-I wrote the PRD, made every product and prioritization call, and paired with Claude Code for 100% of the implementation — architecture, Kotlin/Compose UI, OCR tuning, a Python data pipeline, and Play Store launch prep. This doc is the retro I wish I'd had going in: what worked, what I'd tell other PMs trying this, and what's left.
+I wrote the PRD, made every product and prioritization call, and paired with Claude Code for 100% of the implementation — architecture, Kotlin/Compose UI, OCR tuning, a Python data pipeline, and Play Store launch. This doc is a summary of my process.
 
 ---
 
 ## The Problem
+In Pokémon GO, players leave a selected pokemon at a spot and the largest one wins.
+There are some pains with this contest:
 
-Pokémon GO's "Showcase" feature has a quietly brutal design:
-
-1. **Scores are invisible until it's too late.** A Pokémon's showcase score only appears *after* you've entered it — not in your storage box — so there's no way to compare candidates before committing.
-2. **Slots are scarce and sticky.** You can only have 3 Pokémon entered across all showcases at once, with no way to withdraw. A bad entry locks up a slot for the entire event.
+1. The largest pokemon is determined by a hidden score, only visible when entering the contest. You have no way of knowing which ones to keep in your limited storage.
+2. **Slots are scarce and sticky.** You can only have 5 Pokémon entered across all showcases at once, with no way to withdraw. A bad entry locks up a slot for the entire event.
 3. **Winning has a cost.** First-place winners are barred from re-entering that species' showcase for the next two events — so a player who wins with their *only* good candidate has no backup ready.
 
 Net effect: players enter blind, waste slots on uncompetitive Pokémon, and get caught flat-footed after a win. The app's job is to move the "is this any good?" decision *before* the slot commitment, using nothing but a screenshot.
@@ -35,7 +35,7 @@ Everything runs **fully offline** — OCR, scoring, and the Pokémon database ar
 
 | Layer | Tooling |
 |---|---|
-| Spec | A living PRD (`showcase-scout-prd.md`) — problem statement, goals, **non-goals**, screen-by-screen requirements with acceptance criteria, success metrics, and a resolved-decisions log |
+| Spec | A living PRD, problem statement, goals, non-goals, screen-by-screen requirements with acceptance criteria, success metrics, and a resolved-decisions log |
 | Engineering | [Claude Code](https://claude.com/claude-code) (Claude Sonnet 4.6) — sole implementer, working from the PRD and from GitHub issues I filed as I dogfooded |
 | App | Kotlin, Jetpack Compose, Room (local DB), Android MediaProjection (screen-capture overlay) |
 | OCR | Google ML Kit Text Recognition (on-device) + a custom pixel-analysis reader for the IV bar charts (more on this below) |
