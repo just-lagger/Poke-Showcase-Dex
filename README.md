@@ -6,7 +6,10 @@ Pokemon Go players, figure out your showcase score using Poke Showcase Dex! Mana
 * Generate a search string to find the pokemon
 * Import from Pokegenie
 
+
 ## Join the closed access test
 Join group [https://groups.google.com/g/psd-early-access](https://groups.google.com/g/psd-early-access)
+
 Join on the web [https://play.google.com/apps/testing/com.showcasescout.app](https://play.google.com/apps/testing/com.showcasescout.app)
+
 Join on Android [https://play.google.com/store/apps/details?id=com.showcasescout.app](https://play.google.com/store/apps/details?id=com.showcasescout.app)
