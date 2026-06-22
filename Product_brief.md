@@ -109,11 +109,8 @@ Solo means PM, designer, QA, and "stakeholder sign-off" are all the same person.
 
 ## What's Next
 
-- **Pokémon database completeness** — base stats and forms are generated from the public PokeMiners Game Master dump via a small Python pipeline; this needs to stay current as Niantic adds species/forms.
-- **Manual species override** — a searchable dropdown for when OCR misreads a name.
 - **Crash reporting** and broader real-device OCR validation (the IV bar reader's color thresholds were tuned on a limited set of devices/screens).
 - **iOS** — the screenshot-first design was deliberately chosen to make a port feasible; not yet scoped.
-- **Crowdsourced leaderboard data** — replacing theoretical score ranges with real win-rate percentiles, if there's ever a backend to support it.
 
 ---
 
