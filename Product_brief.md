@@ -49,7 +49,6 @@ The PRD's **Non-Goals** table ended up being just as load-bearing as the goals:
 | Non-Goal | Why it mattered |
 |---|---|
 | IV calculation | PokeGenie already owns this — don't rebuild it |
-| Real-time overlay automation | Screenshot-based flow is simpler, safer, and keeps the app firmly on the right side of Niantic's ToS |
 | Account login / reading game memory | Hard line — the app only ever sees what the user explicitly shares |
 
 Every time a "wouldn't it be cool if..." idea came up mid-build (and they did), I checked it against this table first. Most died there, which kept Claude Code's implementation work focused instead of sprawling.
