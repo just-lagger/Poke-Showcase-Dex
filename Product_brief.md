@@ -40,13 +40,10 @@ Secondary: User Engagement - steady growth of users
 ---
 
 ## What I Built
-
-Two core screens, mapped directly to the user's decision flow — **input, then result**:
-
-- **Select screen** — Import a screenshot (or use a floating overlay to capture directly from the game). On-device OCR extracts the Pokémon's name, height, weight, and XXL status. Individual Attack/Defense/HP IV dropdowns let the player enter values exactly how they'd read them off PokeGenie. Every OCR'd field is editable inline — nothing is silently trusted.
-- **Evaluation screen** — Shows the calculated score range, a position gauge against that species' min/max possible score, a per-type comparison (where does this score rank against *every* Pokémon eligible for, say, a Fire-type showcase?), and species/type rankings against the player's own saved scans. Players can later log the *actual* score the game gave them, and the app uses that real value for ranking once it's known.
-
-Everything runs **fully offline** — OCR, scoring, and the Pokémon database are all on-device. No accounts, no servers, no analytics SDKs.
+Everything runs **fully offline**
+- **Screen scraping details** — A floating overlay captures details directly from the game. On-device OCR extracts the Pokémon's details.  Summary info is displayed to the player in the overlay. 
+- **Evaluation screen** — Shows the calculated score, a position gauge against min/max possible score, and ranking.
+- **Management** — Easily manage saved information
 
 ---
 
@@ -80,11 +77,9 @@ The PRD laid out three phases — **Core → Polish → Launch** — with a P0/P
 
 ## Challenges
 
-### 1. OCR is a product decision, not just an engineering one
+### 1. OCR tuning
 
-The hardest technical problem — reading IV values off the in-game appraisal screen's bar charts — turned into a product conversation fast. There's no text to OCR for IVs; it's three horizontal bar charts whose *fill length* encodes a 0–15 value. We ended up with a pixel-by-pixel brightness/saturation classifier that distinguishes "filled bar" from "empty track" from "background."
-
-The PM call here wasn't the algorithm — it was deciding **what happens when OCR is wrong**. Per the PRD: *"If any field fails to parse, it shows as an empty editable input — no silent defaults."* That single requirement shaped the whole Select screen and avoided a much worse outcome: a confidently-wrong score that erodes trust on the very first use.
+The hardest problems involve defining OCR interpretation. Values aren't consistent, plenty of "if-then" flows, and recognizing non-character values.
 
 ### 2. Real usage reshaped the data model mid-build
 
@@ -94,45 +89,16 @@ Early on, the PRD specified a simple "scan history — last 20 scans." Once I st
 - Later, I added the ability to log the **actual score** the game returned after entering a showcase — and rankings switched to use that real value over the estimate once it's known.
 - The original LOW/MED/HIGH "win chance" badge — a P1 feature I'd specced as the casual-user headline — got removed once the type-comparison view existed, because it was strictly less informative and nobody (including me) looked at it.
 
-None of these were planned in the PRD. All of them came from a week of actually using the thing I was building — the single highest-leverage thing I did as the PM on this project.
-
-### 3. Pre-launch hardening is its own mini-project
-
-"Polish" and "Launch" in the PRD's phase plan turned out to hide a real checklist: release signing config, stripping debug logging from release builds (so OCR'd scan data can't leak into logs), disabling Android Auto Backup so local history can't leave the device (this directly backs a privacy-policy claim), trimming permissions to the minimum the app actually uses, and excluding tablets from the Play Store listing since the UI isn't tablet-tuned. None of this is visible to a user in a demo, and all of it is required to ship responsibly. Budgeting real time for it (it became its own PR) kept it from being a last-minute scramble.
-
-### 4. Being the entire team
-
-Solo means PM, designer, QA, and "stakeholder sign-off" are all the same person. The thing that made this tractable: filing real GitHub issues against myself during dogfooding sessions (narrow overlay was covering gameplay, evaluation screen needed a back button, etc.) instead of trying to fix things in the moment. That turned "I noticed something annoying" into a backlog Claude Code could pick up cleanly, with traceable commits referencing each issue.
+None of these were planned in the PRD. All of them came from using the thing I was building.
 
 ---
 
 ## Lessons Learned (for other PMs trying this)
 
-1. **Write the PRD like the AI is your engineering team — because it is.** Goals, non-goals, acceptance criteria, and a resolved-decisions log gave Claude Code a stable spec to build against and gave me a fast "is this in scope?" check throughout.
-2. **Non-goals are the highest-leverage section you'll write.** They're what stop a solo project from drifting into "rebuild PokeGenie."
-3. **Ship to yourself first, then let real usage rewrite the spec.** The biggest product changes (saved roster instead of scan log, actual-score tracking, dropping the win-chance badge) all came from a few days of dogfooding — not from more upfront planning.
-4. **For "fuzzy" inputs (OCR, ML, anything probabilistic), the product requirement *is* "what happens on failure," not just "what happens on success."** Define the failure UX before the success UX gets built.
-5. **Treat compliance/privacy/security work as a real backlog item with its own PR**, not a pre-submission afterthought — especially for anything touching screen capture, overlays, or local data.
-6. **File issues against yourself.** Even solo, a lightweight issue → branch → PR loop keeps "things I noticed while using it" from turning into untracked scope.
+- **Write the PRD like the AI is your engineering team — because it is.** Goals, non-goals, acceptance criteria, and a resolved-decisions log gave Claude Code a stable spec to build against and gave me a fast "is this in scope?" check throughout.
+- **Ship to yourself first, then let real usage rewrite the spec.** The biggest product changes (saved roster instead of scan log, actual-score tracking, dropping the win-chance badge) all came from a few days of dogfooding — not from more upfront planning.
+- **For "fuzzy" inputs (OCR, ML, anything probabilistic), the product requirement *is* "what happens on failure," not just "what happens on success."** Define the failure UX before the success UX gets built.
+- **File issues against yourself.** Even solo, a lightweight issue → branch → PR loop keeps "things I noticed while using it" from turning into untracked scope.
+- **Meeting Google Play store test uers launch requirements** wasn't planned for. Needing to find within my circle the 'first users' rather than releasing and just relying on SEO.
 
 ---
-
-## Key User Problems (Recap)
-
-- *"I can't tell if this Pokémon is worth a showcase slot before I commit it."* → Score range + position gauge, computed from a screenshot.
-- *"I don't know how I stack up against the field, not just my own roster."* → Per-type comparison against every eligible Pokémon.
-- *"I won, and now my best entry is locked out for two events — who's my backup?"* → Saved roster with species/type rankings, refined by real scores once known.
-- *"I don't trust an automated number I can't verify."* → Every input is shown, editable, and auditable on the result screen.
-
----
-
-## What's Next
-
-- **Crash reporting** and broader real-device OCR validation (the IV bar reader's color thresholds were tuned on a limited set of devices/screens).
-- **iOS** — the screenshot-first design was deliberately chosen to make a port feasible; not yet scoped.
-
----
-
-## Get in Touch
-
-If you're a PM, founder, or hiring manager and want to talk about this project (or about building product with AI-assisted engineering more broadly), reach out: **laggerBP@gmail.com**
