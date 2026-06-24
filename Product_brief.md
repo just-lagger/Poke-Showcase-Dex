@@ -4,7 +4,7 @@
 
 **Poke Showcase Dex** is an Android app that helps Pokémon GO players decide which Pokémon to enter into "Showcase" events. PSD opens an overlay over Pokemon go to capture Pokémon's detail screen, the app reads its stats via on-device OCR, and instantly returns a calculated score range, and a ranking against the player's other scans.
 
-I wrote the PRD, made every product and prioritization call, and paired with Claude Code for 100% of the implementation — architecture, Kotlin/Compose UI, OCR tuning, a Python data pipeline, and Play Store launch. This doc is a summary of my process.
+I wrote a PRD, used Claude Code for 100% of the implementation — architecture, Kotlin/Compose UI, OCR tuning, a Python data pipeline, and Play Store launch. This doc is a summary of my process and my lessons learned.
 
 ---
 
@@ -15,8 +15,27 @@ There are some pains with this contest:
 1. The largest pokemon is determined by a hidden score, only visible when entering the contest. You have no way of knowing which ones to keep in your limited storage.
 2. **Slots are scarce and sticky.** You can only have 5 Pokémon entered across all showcases at once, with no way to withdraw. A bad entry locks up a slot for the entire event.
 3. **Winning has a cost.** First-place winners are barred from re-entering that species' showcase for the next two events — so a player who wins with their *only* good candidate has no backup ready.
+4. **Limited storage.** There's a finite amount of Pokémon that you can have with upgrades requiring real money. Holding onto low value hurts the bottom line.
 
 Net effect: players enter blind, waste slots on uncompetitive Pokémon, and get caught flat-footed after a win. The app's job is to move the "is this any good?" decision *before* the slot commitment, using nothing but a screenshot.
+
+---
+
+## The Player
+I'm building this for the core to hardcore player. These players spend hours in the game, min-maxing where possible. The end goal of winning 100 Showcases is a rare Pikachu variant.
+
+---
+
+## Competition
+- Existing tools exist but require manual entry on a websites, which takes time.
+- CalcyIV - another overlay app that will provide the estimate range however it does not provide sorting or management of showcases.
+- Pokemon Go itself provides this feature during showcases for the selected types. Should they ever release this as persistent feature then this app has no use.
+
+---
+
+## Success
+Primary: This tool is a learning experience for me, success is measured in a 0-1 launch in the store.
+Secondary: User Engagement - steady growth of users
 
 ---
 
@@ -35,7 +54,7 @@ Everything runs **fully offline** — OCR, scoring, and the Pokémon database ar
 
 | Layer | Tooling |
 |---|---|
-| Spec | A living PRD, problem statement, goals, non-goals, screen-by-screen requirements with acceptance criteria, success metrics, and a resolved-decisions log |
+| Spec | A living PRD, problem statement, goals, non-goals, screen-by-screen requirements with acceptance criteria, success metrics, and a resolved-decisions log. Built with Claude Chat, going back and forth on scope, decisions, and reasoning. |
 | Engineering | [Claude Code](https://claude.com/claude-code) (Claude Sonnet 4.6) — sole implementer, working from the PRD and from GitHub issues I filed as I dogfooded |
 | App | Kotlin, Jetpack Compose, Room (local DB), Android MediaProjection (screen-capture overlay) |
 | OCR | Google ML Kit Text Recognition (on-device) + a custom pixel-analysis reader for the IV bar charts (more on this below) |
